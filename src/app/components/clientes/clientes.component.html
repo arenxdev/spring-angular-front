@@ -1,7 +1,26 @@
-<div class="card border-primary mb-3" style="max-width: 18rem;">
-  <div class="card-header">Clientes</div>
+<div class="card border-primary mb-3">
+  <div class="card-header">Customers</div>
   <div class="card-body text-primary">
-    <h5 class="card-title">Primary card title</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <h5 class="card-title">List of customers</h5>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Last name</th>
+          <th>Email</th>
+          <th>Birth Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of clientes">
+          <td>{{ cliente.id }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.apellido }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.createAt }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
