@@ -10,12 +10,14 @@ import swal from 'sweetalert2';
 })
 export class FormComponent implements OnInit {
 
-  private cliente: Cliente = new Cliente();
+  cliente: Cliente = new Cliente();
+  errores: string[];
 
   constructor(
     private clienteService: ClienteService,
     private router: Router,
-    private activatedRoute: ActivatedRoute ) { }
+    private activatedRoute: ActivatedRoute
+  ) { }
 
   ngOnInit() {
     this.loadCustomer();
@@ -42,13 +44,21 @@ export class FormComponent implements OnInit {
     this.clienteService.create(this.cliente).subscribe(({ nombre }) => {
       this.router.navigate(['/clientes']);
       swal.fire('Customer saved', `Customer ${nombre} created successfully`, 'success');
+    },
+      err => {
+        this.errores = err.error.errors as string[];
+        console.error(`Error code from backend ${err.status}`);
     });
   }
 
   public update(): void {
-    this.clienteService.update(this.cliente).subscribe(({ nombre }) => {
+    this.clienteService.update(this.cliente).subscribe(({ cliente }) => {
       this.router.navigate(['/clientes']);
-      swal.fire('Customer updated', `Customer ${nombre} updated successfully`, 'success');
+      swal.fire('Customer updated', `Customer ${cliente.nombre} updated successfully`, 'success');
+    },
+      err => {
+        this.errores = err.error.errors as string[];
+        console.error(`Error code from backend ${err.status}`);
     });
   }
 

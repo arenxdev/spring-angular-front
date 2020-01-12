@@ -1,31 +1,57 @@
+<ul *ngIf="errores?.length > 0" class="alert alert-danger">
+<li *ngFor="let err of errores">{{ err }}</li>
+</ul>
 <div class="card bg-dark text-white">
   <div class="card-header">Create Customer</div>
   <div class="card-body">
-    <form (ngSubmit) = "submit()">
+    <form (ngSubmit) = "submit()" #clienteForm="ngForm">
       <div class="form-group row">
         <label for="nombre" class="col-form-label col-sm-2">Name</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre">
+          <!-- <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre" required minlength="4" #nombre="ngModel"> -->
+          <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre" #nombre="ngModel">
+          <div class="alert alert-danger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+            <div *ngIf="nombre.errors.required">
+              Name is required
+            </div>
+            <div *ngIf="nombre.errors.minlength">
+              The name must have at least 4 characters
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <label for="apellido" class="col-form-label col-sm-2">Last Name</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" [(ngModel)]="cliente.apellido" name="apellido">
+          <!-- <input type="text" class="form-control" [(ngModel)]="cliente.apellido" name="apellido" required #apellido="ngModel"> -->
+          <input type="text" class="form-control" [(ngModel)]="cliente.apellido" name="apellido" #apellido="ngModel">
+          <div class="alert alert-danger" *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)">
+            <div *ngIf="apellido.errors.required">
+              Last name is required
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <label for="email" class="col-form-label col-sm-2">Email</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" [(ngModel)]="cliente.email" name="email">
+          <!-- <input type="text" class="form-control" [(ngModel)]="cliente.email" name="email" required email #email="ngModel"> -->
+          <input type="text" class="form-control" [(ngModel)]="cliente.email" name="email" #email="ngModel">
+          <div class="alert alert-danger" *ngIf="email.invalid && (email.dirty || email.touched)">
+            <div *ngIf="email.errors.required">
+              Email is required
+            </div>
+            <div *ngIf="email.errors.email">
+              Email must have a valid format
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-6">
-          <button class="btn btn-primary" role="button">{{ cliente.id ? 'Edit' : 'Create' }}</button>
+          <button class="btn btn-primary" role="button" [disabled]="!clienteForm.form.valid">{{ cliente.id ? 'Edit' : 'Create' }}</button>
         </div>
       </div>
-
     </form>
   </div>
 </div>
