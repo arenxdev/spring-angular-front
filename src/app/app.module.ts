@@ -11,6 +11,7 @@ import { registerLocaleData } from '@angular/common';
 import localeCo from '@angular/common/locales/es-CO';
 
 import { ClienteService } from './clientes/cliente.service';
+import { RegionService } from './clientes/region.service';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -19,6 +20,7 @@ import { DirectivaComponent } from './directiva/directiva.component';
 import { ClientesComponent } from './clientes/clientes.component';
 import { FormComponent } from './clientes/form.component';
 import { PaginadorComponent } from './paginador/paginador.component';
+import { DetalleComponent } from './clientes/detalle/detalle.component';
 
 registerLocaleData(localeCo, 'es');
 
@@ -39,7 +41,8 @@ const routes: Routes = [
     DirectivaComponent,
     ClientesComponent,
     FormComponent,
-    PaginadorComponent
+    PaginadorComponent,
+    DetalleComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +53,7 @@ const routes: Routes = [
     MatDatepickerModule,
     MatMomentDateModule
   ],
-  providers: [ClienteService, { provide: LOCALE_ID, useValue: 'es' }],
+  providers: [ClienteService, RegionService, { provide: LOCALE_ID, useValue: 'es' }],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

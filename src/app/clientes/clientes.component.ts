@@ -2,8 +2,9 @@ import swal from 'sweetalert2';
 import { Component, OnInit } from '@angular/core';
 import { Cliente } from './cliente';
 import { ClienteService } from './cliente.service';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { ModalService } from './detalle/modal.service';
 
 @Component({
   selector: 'app-clientes',
@@ -12,8 +13,13 @@ import { ActivatedRoute } from '@angular/router';
 export class ClientesComponent implements OnInit {
   clientes: Cliente[];
   paginador: any;
+  clienteSelecionado: Cliente;
 
-  constructor(private clienteService: ClienteService, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private clienteService: ClienteService,
+    private activatedRoute: ActivatedRoute,
+    private modalService: ModalService
+  ) {}
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
@@ -31,6 +37,15 @@ export class ClientesComponent implements OnInit {
           this.paginador = res.page;
         });
     });
+
+    this.modalService.notificarUpload
+      .pipe(
+        tap(
+          clienteImg =>
+            (this.clientes = this.clientes.map(cliente => (cliente.id === clienteImg.id ? clienteImg : cliente)))
+        )
+      )
+      .subscribe();
     // this.activatedRoute.params.subscribe(params => console.log(`params: ${JSON.stringify(params)}`));
     // this.activatedRoute.paramMap.subscribe(params => console.log(`paramMap: ${JSON.stringify(params)}`));
   }
@@ -55,5 +70,10 @@ export class ClientesComponent implements OnInit {
           });
         }
       });
+  }
+
+  abrirModal(cliente: Cliente) {
+    this.clienteSelecionado = cliente;
+    this.modalService.abrirModal();
   }
 }

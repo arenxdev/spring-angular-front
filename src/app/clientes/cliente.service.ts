@@ -1,7 +1,7 @@
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Injectable, Pipe } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest, HttpEvent } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { formatDate, DatePipe } from '@angular/common';
 import swal from 'sweetalert2';
@@ -97,5 +97,25 @@ export class ClienteService {
 
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.urlEndPoint}/${id}`, { headers: this.httpHeaders });
+  }
+
+  uploadImg(archivo: File, id: number): Observable<HttpEvent<any>> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    formData.append('id', id.toString());
+    const req = new HttpRequest('POST', `${this.urlEndPoint}/upload`, formData, { reportProgress: true });
+    return this.http.request(req);
+    // .pipe(
+    //   catchError(err => {
+    //     if (err.status !== 400) {
+    //       swal.fire({
+    //         icon: 'error',
+    //         title: err.error.mensaje,
+    //         text: err.error.error
+    //       });
+    //     }
+    //     return throwError(err);
+    //   })
+    // );
   }
 }
