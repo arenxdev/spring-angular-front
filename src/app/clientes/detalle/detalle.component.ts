@@ -6,6 +6,7 @@ import { map, tap } from 'rxjs/operators';
 import swal from 'sweetalert2';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { ModalService } from './modal.service';
+import { AuthService } from '../../usuarios/auth.service';
 
 @Component({
   selector: 'app-detalle-cliente',
@@ -17,7 +18,11 @@ export class DetalleComponent implements OnInit {
   imagen: File;
   progreso = 0;
 
-  constructor(private clienteService: ClienteService, private modalService: ModalService) {}
+  constructor(
+    private clienteService: ClienteService,
+    private modalService: ModalService,
+    protected authService: AuthService
+  ) {}
 
   ngOnInit() {
     // this.activatedRoute.paramMap.subscribe(params => {

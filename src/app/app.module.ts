@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms/';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,6 +21,12 @@ import { ClientesComponent } from './clientes/clientes.component';
 import { FormComponent } from './clientes/form.component';
 import { PaginadorComponent } from './paginador/paginador.component';
 import { DetalleComponent } from './clientes/detalle/detalle.component';
+import { LoginComponent } from './usuarios/login.component';
+
+import { AuthGuard } from './usuarios/guards/auth.guard';
+import { RoleGuard } from './usuarios/guards/role.guard';
+import { TokenInterceptor } from './usuarios/interceptors/token.interceptor';
+import { AuthInterceptor } from './usuarios/interceptors/auth.interceptor';
 
 registerLocaleData(localeCo, 'es');
 
@@ -29,8 +35,19 @@ const routes: Routes = [
   { path: 'directivas', component: DirectivaComponent },
   { path: 'clientes', component: ClientesComponent },
   { path: 'clientes/page/:page', component: ClientesComponent },
-  { path: 'clientes/form', component: FormComponent },
-  { path: 'clientes/form/:id', component: FormComponent }
+  {
+    path: 'clientes/form',
+    component: FormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_ADMIN' }
+  },
+  {
+    path: 'clientes/form/:id',
+    component: FormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_ADMIN' }
+  },
+  { path: 'login', component: LoginComponent }
 ];
 
 @NgModule({
@@ -42,7 +59,8 @@ const routes: Routes = [
     ClientesComponent,
     FormComponent,
     PaginadorComponent,
-    DetalleComponent
+    DetalleComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +71,13 @@ const routes: Routes = [
     MatDatepickerModule,
     MatMomentDateModule
   ],
-  providers: [ClienteService, RegionService, { provide: LOCALE_ID, useValue: 'es' }],
+  providers: [
+    ClienteService,
+    RegionService,
+    { provide: LOCALE_ID, useValue: 'es' },
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

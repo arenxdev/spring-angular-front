@@ -4,28 +4,19 @@ import { Injectable, Pipe } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest, HttpEvent } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { formatDate, DatePipe } from '@angular/common';
-import swal from 'sweetalert2';
 
 import { Cliente } from './cliente';
+import { AuthService } from '../usuarios/auth.service';
 
 @Injectable()
 export class ClienteService {
   private urlEndPoint = 'http://localhost:8080/api/cliente';
-  private httpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 
   getClientes(page: number): Observable<any> {
     // return this.http.get(this.urlEndPoint).pipe(map(ResponseOne => ResponseOne as Cliente[]));
     return this.http.get(`${this.urlEndPoint}/page/${page}`).pipe(
-      catchError(err => {
-        swal.fire({
-          icon: 'error',
-          title: err.error.mensaje,
-          text: err.error.error
-        });
-        return throwError(err);
-      }),
       tap((res: any) => {
         const clientes = res.page.content as Cliente[];
         console.log('ClienteService: TAB 1');
@@ -51,71 +42,43 @@ export class ClienteService {
   }
 
   getCliente(id): Observable<any> {
+    // return this.http.get(`${this.urlEndPoint}/${id}`, { headers: this.authService.httpHeaders }).pipe(
     return this.http.get(`${this.urlEndPoint}/${id}`).pipe(
       catchError(err => {
-        this.router.navigate(['/clientes']);
+        if (err.status !== 401) {
+          this.router.navigate(['/clientes']);
+        }
         console.error(err);
-        swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.error.mensaje
-        });
         return throwError(err);
       })
     );
   }
 
   create(cliente: Cliente): Observable<any> {
-    return this.http.post(this.urlEndPoint, cliente, { headers: this.httpHeaders }).pipe(
-      catchError(err => {
-        if (err.status !== 400) {
-          swal.fire({
-            icon: 'error',
-            title: err.error.mensaje,
-            text: err.error.error
-          });
-        }
-        return throwError(err);
-      })
-    );
+    return this.http.post(this.urlEndPoint, cliente);
   }
 
   update(cliente: Cliente): Observable<any> {
-    return this.http.put(`${this.urlEndPoint}/${cliente.id}`, cliente, { headers: this.httpHeaders }).pipe(
-      catchError(err => {
-        if (err.status !== 400) {
-          swal.fire({
-            icon: 'error',
-            title: err.error.mensaje,
-            text: err.error.error
-          });
-        }
-        return throwError(err);
-      })
-    );
+    return this.http.put(`${this.urlEndPoint}/${cliente.id}`, cliente);
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(`${this.urlEndPoint}/${id}`, { headers: this.httpHeaders });
+    return this.http.delete(`${this.urlEndPoint}/${id}`);
   }
 
   uploadImg(archivo: File, id: number): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('archivo', archivo);
     formData.append('id', id.toString());
-    const req = new HttpRequest('POST', `${this.urlEndPoint}/upload`, formData, { reportProgress: true });
+    // let httpHeaders = new HttpHeaders();
+    // const token = this.authService.token;
+    // if (token) {
+    //   httpHeaders = httpHeaders.append('Authorization', `Bearer ${token}`);
+    // }
+    const req = new HttpRequest('POST', `${this.urlEndPoint}/upload`, formData, {
+      reportProgress: true
+      // headers: httpHeaders
+    });
     return this.http.request(req);
-    // .pipe(
-    //   catchError(err => {
-    //     if (err.status !== 400) {
-    //       swal.fire({
-    //         icon: 'error',
-    //         title: err.error.mensaje,
-    //         text: err.error.error
-    //       });
-    //     }
-    //     return throwError(err);
-    //   })
-    // );
   }
 }
