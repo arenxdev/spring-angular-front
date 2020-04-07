@@ -8,7 +8,7 @@ import { Region } from './region';
 
 @Component({
   selector: 'app-form',
-  templateUrl: './form.component.html'
+  templateUrl: './form.component.html',
 })
 export class FormComponent implements OnInit {
   cliente: Cliente = new Cliente();
@@ -25,25 +25,25 @@ export class FormComponent implements OnInit {
 
   ngOnInit() {
     this.cargarCliente();
-    this.regionService.getRegiones().subscribe(regiones => (this.regiones = regiones));
+    this.regionService.getRegiones().subscribe((regiones) => (this.regiones = regiones));
   }
 
   cargarCliente(): void {
-    this.activatedRoute.params.subscribe(params => {
+    this.activatedRoute.params.subscribe((params) => {
       const id = params.id;
       if (id) {
-        this.clienteService.getCliente(id).subscribe(res => (this.cliente = res.cliente));
+        this.clienteService.getCliente(id).subscribe((res) => (this.cliente = res.cliente));
       }
     });
   }
 
   create(): void {
     this.clienteService.create(this.cliente).subscribe(
-      res => {
+      (res) => {
         this.router.navigate(['/clientes']);
         swal.fire('Nuevo Cliente', `${res.mensaje} : ${res.cliente.nombre}`, 'success');
       },
-      err => {
+      (err) => {
         this.errores = err.error.errores as string[];
         console.error(`Código de error desde el backend: `);
         console.error(this.errores);
@@ -52,12 +52,13 @@ export class FormComponent implements OnInit {
   }
 
   update(): void {
+    this.cliente.facturas = null;
     this.clienteService.update(this.cliente).subscribe(
-      res => {
+      (res) => {
         this.router.navigate(['/clientes']);
         swal.fire('Cliente Actualizado', `${res.mensaje} : ${res.cliente.nombre}`, 'success');
       },
-      err => {
+      (err) => {
         this.errores = err.error.errores as string[];
         console.error(`Código de error desde el backend: `);
         console.error(this.errores);

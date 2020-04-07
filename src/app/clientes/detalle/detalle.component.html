@@ -5,7 +5,7 @@
   aria-labelledby="exampleModalLiveLabel"
   tabindex="-1"
   role="dialog"
-  style="display: block; background: rgba(0,0,0, 0.2);"
+  style="display: block; background: rgba(0, 0, 0, 0.2);"
 >
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -58,7 +58,7 @@
                   attr.aria-valuenow="{{ progreso }}"
                   aria-valuemin="0"
                   aria-valuemax="100"
-                  style="width: 75%"
+                  style="width: 75%;"
                   [ngStyle]="{ width: progreso + '%' }"
                 >
                   {{ progreso }}%
@@ -73,6 +73,44 @@
                 class="img-thumbnail rounded"
               />
             </div>
+          </div>
+
+          <div class="row" *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <button type="button" [routerLink]="['/facturas/form', cliente.id]" class="btn btn-success btn-sm">
+              Crear factura
+            </button>
+          </div>
+
+          <div class="row">
+            <div *ngIf="cliente.facturas?.length === 0" class="alert alert-info my-4">
+              No hay facturas asignadas para el cliente {{ cliente.nombre }} {{ cliente.apellido }}
+            </div>
+            <table *ngIf="cliente.facturas?.length > 0" class="table table-bordered table-striped my-4">
+              <thead>
+                <tr>
+                  <th>folio</th>
+                  <th>descripción</th>
+                  <th>fecha</th>
+                  <th>total</th>
+                  <th>detalle</th>
+                  <th *ngIf="authService.hasRole('ROLE_ADMIN')">eliminar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let factura of cliente.facturas">
+                  <td>{{ factura.id }}</td>
+                  <td>{{ factura.descripcion }}</td>
+                  <td>{{ factura.createAt }}</td>
+                  <td>{{ factura.total }}</td>
+                  <td>
+                    <a class="btn btn-primary btn-sm" [routerLink]="['/facturas', factura.id]">ver</a>
+                  </td>
+                  <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+                    <button class="btn btn-danger btn-sm" (click)="delete(factura)">Eliminar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

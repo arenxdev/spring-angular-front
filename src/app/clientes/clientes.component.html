@@ -23,6 +23,7 @@
           <th>nombre</th>
           <th>apellido</th>
           <th>fecha</th>
+          <th *ngIf="authService.hasRole('ROLE_ADMIN')">crear factura</th>
           <th *ngIf="authService.hasRole('ROLE_ADMIN')">editar</th>
           <th *ngIf="authService.hasRole('ROLE_ADMIN')">eliminar</th>
         </tr>
@@ -50,6 +51,11 @@
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.apellido | uppercase }}</td>
           <td>{{ cliente.createAt | date: 'EEEE dd, MMMM yyyy' }}</td>
+          <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+            <button type="button" [routerLink]="['/facturas/form', cliente.id]" class="btn btn-success btn-sm">
+              Crear factura
+            </button>
+          </td>
           <td *ngIf="authService.hasRole('ROLE_ADMIN')">
             <button name="editar" [routerLink]="['/clientes/form', cliente.id]" class="btn btn-primary btn-sm">
               Editar

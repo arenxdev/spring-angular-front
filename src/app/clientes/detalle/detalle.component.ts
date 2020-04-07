@@ -7,11 +7,12 @@ import swal from 'sweetalert2';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { ModalService } from './modal.service';
 import { AuthService } from '../../usuarios/auth.service';
+import { FacturaService } from '../../facturas/services/factura.service';
+import { Factura } from 'src/app/facturas/models/factura';
 
 @Component({
   selector: 'app-detalle-cliente',
-  templateUrl: './detalle.component.html',
-  styleUrls: ['./detalle.component.css']
+  templateUrl: './detalle.component.html'
 })
 export class DetalleComponent implements OnInit {
   @Input() cliente: Cliente;
@@ -21,7 +22,8 @@ export class DetalleComponent implements OnInit {
   constructor(
     private clienteService: ClienteService,
     private modalService: ModalService,
-    protected authService: AuthService
+    protected authService: AuthService,
+    private facturaService: FacturaService
   ) {}
 
   ngOnInit() {
@@ -81,5 +83,28 @@ export class DetalleComponent implements OnInit {
     this.modalService.cerrarModal();
     this.imagen = null;
     this.progreso = 0;
+  }
+
+  delete(factura: Factura) {
+    swal
+      .fire({
+        title: '¿Estás seguro?',
+        text: 'Este proceso no podrá ser revertido',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, Eliminar',
+        cancelButtonText: 'No'
+      })
+      .then(result => {
+        if (result.value) {
+          this.facturaService.delete(factura.id).subscribe(res => {
+            this.cliente.facturas = this.cliente.facturas.filter(fac => fac !== factura);
+            // swal.fire('Factura Eliminado', `${res.mensaje} : ${cliente.nombre}`, 'success');
+            swal.fire('Factura Eliminado', `Factura eliminada: ${factura.id}`, 'success');
+          });
+        }
+      });
   }
 }

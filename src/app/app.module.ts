@@ -2,10 +2,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Routes, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms/';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms/';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import { MatDatepickerModule } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { registerLocaleData } from '@angular/common';
 import localeCo from '@angular/common/locales/es-CO';
@@ -22,11 +26,13 @@ import { FormComponent } from './clientes/form.component';
 import { PaginadorComponent } from './paginador/paginador.component';
 import { DetalleComponent } from './clientes/detalle/detalle.component';
 import { LoginComponent } from './usuarios/login.component';
+import { DetalleFacturaComponent } from './facturas/detalle-factura.component';
 
 import { AuthGuard } from './usuarios/guards/auth.guard';
 import { RoleGuard } from './usuarios/guards/role.guard';
 import { TokenInterceptor } from './usuarios/interceptors/token.interceptor';
 import { AuthInterceptor } from './usuarios/interceptors/auth.interceptor';
+import { FacturasComponent } from './facturas/facturas.component';
 
 registerLocaleData(localeCo, 'es');
 
@@ -39,15 +45,27 @@ const routes: Routes = [
     path: 'clientes/form',
     component: FormComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ROLE_ADMIN' }
+    data: { role: 'ROLE_ADMIN' },
   },
   {
     path: 'clientes/form/:id',
     component: FormComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ROLE_ADMIN' }
+    data: { role: 'ROLE_ADMIN' },
   },
-  { path: 'login', component: LoginComponent }
+  { path: 'login', component: LoginComponent },
+  {
+    path: 'facturas/:id',
+    component: DetalleFacturaComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_USER' },
+  },
+  {
+    path: 'facturas/form/:idCliente',
+    component: FacturasComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_ADMIN' },
+  },
 ];
 
 @NgModule({
@@ -60,24 +78,30 @@ const routes: Routes = [
     FormComponent,
     PaginadorComponent,
     DetalleComponent,
-    LoginComponent
+    LoginComponent,
+    DetalleFacturaComponent,
+    FacturasComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule.forRoot(routes),
     BrowserAnimationsModule,
     MatDatepickerModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+    MatAutocompleteModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
   providers: [
     ClienteService,
     RegionService,
     { provide: LOCALE_ID, useValue: 'es' },
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
